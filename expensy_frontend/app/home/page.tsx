@@ -14,11 +14,13 @@ import { addExpensesAPI, fetchExpensesAPI } from "@/api/expensesapi"
 
 // Types
 interface Expense {
-  id: number
+  _id?: string  // MongoDB ID
+  id?: number   // manually added for local new expenses
   name: string
   amount: number
   category: string
 }
+
 
 interface NewExpense {
   name: string
@@ -173,7 +175,7 @@ export default function Component() {
             </TableHeader>
             <TableBody>
               {expenses.map((expense) => (
-                <TableRow key={expense.id}>
+                <TableRow key={expense._id || expense.id}>
                   <TableCell className="font-medium">{expense.name}</TableCell>
                   <TableCell className="text-right">${expense.amount}</TableCell>
                   <TableCell>{expense.category}</TableCell>
