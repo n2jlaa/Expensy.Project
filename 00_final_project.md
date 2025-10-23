@@ -1,4 +1,6 @@
-# DevOps Project
+<!-- # DevOps Project -->
+
+<!-- # End-to-End DevOps Deployment of a Multi-Tier Web Application on Azure Kubernetes Service (AKS) -->
 
 In this project, we will focus on the hands-on implementation of the learnings throughout this program, where you will gain practical insights while deploying a full-stack, multi-component web application using modern DevOps practices. 
 The project focuses on containerization, infrastructure automation, Orchestration, CI/CD, observability, and security.
@@ -22,7 +24,19 @@ Your **forked repository** should contain the **Next.js** frontend (root directo
 ### Environment Variables
 
 - **Frontend**: use `NEXT_PUBLIC_*` for variables that need to be exposed to the browser.
+  Your backend requires `NEXT_PUBLIC_API_URL`(your backend URL) to connect to the Backend.
+
 - **Backend**: store secrets like `DATABASE_URI`, `REDIS_PASSWORD`, etc. in a `.env` file or in your CI/CD pipeline secret store. **Never** commit these secrets directly.
+  Your App's backend requires following environment variables to function.
+```
+PORT=8706 (server port)
+DATABASE_URI=mongodb://root:example@localhost:27017 (here comes your MongoDB URI)
+REDIS_HOST=localhost (for local testing)
+REDIS_PORT=6379 (redis defualt port)
+REDIS_PASSWORD=someredispassword (your redis password)
+```
+
+DATABASE_URI env var format: `"mongodb://<username>:<password>@<host>:<port>?authSource=admin"`
 
 Remember that environment variables set in your server take precedence (priority) over the `.env` files.
 
@@ -39,7 +53,7 @@ By the end of this project, you will be able to:
  - Build, test, and containerize frontend and backend & push container images to a registry (Docker Hub or ACR).
  - Automate infratructure deployment
  - Deploy to AKS using manifests or Helm charts.
-5. Set up monitoring and observability using Prometheus and Grafana, with dashboards and alerts.
+5. Set up monitoring and observability using Prometheus and Grafana, with dashboards and alerts for infra as well as your App.
 6. Implement and document security best practices: 
  - Manage secrets via .env files, Kubernetes Secrets, or cloud secret stores such as Azure Key vault.
  - Restrict network access and enforce HTTPS.
@@ -121,11 +135,12 @@ You’ll build and run these services in Docker containers.
 ### Part 1.5 - Orchestration (AKS)
 
 **Kubernetes Manifests**:
-    - Create kubernetes manifests i.e. `deployment.yaml` and `service.yaml` files for both the frontend and backend.
-	- Create manifests (recommeneded type is statefulset) for Redis and MongoDB.
-    - Consider using a single `kustomization.yaml` or a `helm chart` if comfortable.
-    - Reference the container images from Docker Hub (or ACR) and ensure environment variables (like `DATABASE_URI`) are passed via **ConfigMaps** or **Secrets**.
-	
+- Create kubernetes manifests i.e. `deployment.yaml` and `service.yaml` files for both the frontend and backend.
+- Create manifests (recommeneded type is statefulset) for Redis and MongoDB.
+- Consider using a single `kustomization.yaml` or a `helm chart` if comfortable.
+- Reference the container images from Docker Hub (or ACR) and ensure environment variables (like `DATABASE_URI`) are passed via **ConfigMaps** or **Secrets**.
+- Install ingress controller in your cluster and deploy ingress manifest with routing rules configured for your private services.
+
 **Deliverable**:
     - **Kubernetes manifests** or **Helm charts** for deploying your containers.
     - A short `README.md` describing how to deploy onto your AKS cluster.
@@ -151,7 +166,7 @@ You’ll build and run these services in Docker containers.
 ### Part 1.7 - Monitoring and Logging
 
 1. **Prometheus & Grafana** (or an equivalent monitoring stack):
-    - Configure a **Prometheus** instance to scrape metrics from your infrastructure as well as your pods/services.
+    - Configure a **Prometheus** instance to scrape metrics from your infrastructure as well as your pods/services. The API metrics are exposed at the /metrics endpoint, providing real-time backend performance and usage data. The metrics details can be found in `metrics.ts`
     - Configure **Grafana** to visualize those metrics.
     - Optionally, set up alerts/alertmanager (idelly via a yaml file)
 2. **Logging**:
